@@ -1,0 +1,31 @@
+- job_name: blackbox
+  scrape_interval: 10s
+  scrape_timeout: 10s
+  metrics_path: /probe
+  params:
+    module: [icmp]
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: "{{ blackbox_exporter }}" # Blackbox exporter.
+  static_configs:
+    - targets:
+      - bottomless.aa.net.uk
+      - cripps.orangesquash.org.uk
+- job_name: 'snmp'
+  scrape_interval: 10s
+  scrape_timeout: 10s
+  static_configs:
+    - targets:
+      - 192.168.1.100  # SNMP device.
+  metrics_path: /snmp
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: '{{ snmp_exporter }}' # The SNMP exporter's real hostname:port.
