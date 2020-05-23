@@ -29,3 +29,9 @@
       target_label: instance
     - target_label: __address__
       replacement: '{{ snmp_exporter }}' # The SNMP exporter's real hostname:port.
+- job_name: 'aa'
+  scrape_interval: 120s
+  scrape_timeout: 120s
+  static_configs:
+    - targets:
+      - '127.0.0.1:8000'

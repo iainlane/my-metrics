@@ -1,0 +1,72 @@
+description: Generate metrics for metrics.orangesquash.org.uk
+
+series: bionic
+
+applications:
+  prometheus:
+    series: bionic
+    charm: cs:prometheus
+    num_units: 1
+    options:
+      scrape-jobs: |
+        - job_name: blackbox
+          scrape_interval: 10s
+          scrape_timeout: 10s
+          metrics_path: /probe
+          params:
+            module: [icmp]
+          relabel_configs:
+            - source_labels: [__address__]
+              target_label: __param_target
+            - source_labels: [__param_target]
+              target_label: instance
+            - target_label: __address__
+              replacement: "{{ blackbox_exporter }}" # Blackbox exporter.
+          static_configs:
+            - targets:
+              - bottomless.aa.net.uk
+              - cripps.orangesquash.org.uk
+        - job_name: 'snmp'
+          scrape_interval: 10s
+          scrape_timeout: 10s
+          static_configs:
+            - targets:
+              - 192.168.1.100  # SNMP device.
+          metrics_path: /snmp
+          relabel_configs:
+            - source_labels: [__address__]
+              target_label: __param_target
+            - source_labels: [__param_target]
+              target_label: instance
+            - target_label: __address__
+              replacement: '{{ snmp_exporter }}' # The SNMP exporter's real hostname:port.
+        - job_name: 'aa'
+          scrape_interval: 120s
+          scrape_timeout: 120s
+          static_configs:
+            - targets:
+              - '127.0.0.1:8000'
+  prometheus-blackbox-exporter:
+    charm: cs:prometheus-blackbox-exporter
+    num_units: 1
+    to: ["prometheus"]
+  prometheus-snmp-exporter:
+    charm: cs:prometheus-snmp-exporter
+    num_units: 1
+    to: ["prometheus"]
+    options:
+      snmp_community: home.orangesquash.org.uk
+  aa-prometheus:
+    charm: ./charm/aa-prometheus
+    num_units: 1
+    to: ["prometheus"]
+  grafana:
+    num_units: 1
+    charm: cs:grafana
+relations:
+  - - prometheus:grafana-source
+    - grafana:grafana-source
+  - - prometheus:snmp-exporter
+    - prometheus-snmp-exporter
+  - - prometheus:blackbox-exporter
+    - prometheus-blackbox-exporter
