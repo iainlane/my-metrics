@@ -1,0 +1,7 @@
+name: aa-prometheus
+summary: Get AAISP quota bytes remaining and expose it as a Prometheus metric
+description: |
+  Read the CGI file that AAISP provides, get the remaining bytes left out of
+  it, and expose that as a prometheus metric.
+maintainer: Iain Lane <iain@orangesquash.org.uk>
+subordinate: false

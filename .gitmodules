@@ -1,0 +1,3 @@
+[submodule "mod/operator"]
+	path = charm/aa-prometheus/mod/operator
+	url = https://github.com/canonical/operator
