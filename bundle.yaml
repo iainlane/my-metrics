@@ -8,6 +8,7 @@ applications:
     charm: cs:prometheus
     num_units: 1
     options:
+      daemon-args: -storage.local.retention 36000h0m0s
       scrape-jobs: |
         - job_name: blackbox
           scrape_interval: 10s
